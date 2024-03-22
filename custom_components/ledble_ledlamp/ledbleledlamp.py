@@ -253,8 +253,7 @@ class LEDBLELEDLamp:
         rgb_packet.append(rgb[0])
         rgb_packet.append(rgb[1])
         rgb_packet.append(rgb[2])
-        rgb_packet.append(0xff)
-        rgb_packet.append(0xef)
+        rgb_packet.extend([0xff,0xef])
         await self._write(rgb_packet)
 
     async def set_brightness_local(self, value: int):
@@ -264,7 +263,7 @@ class LEDBLELEDLamp:
         brightness_percent = int(value * 100 / 255)
         brightness_packet = bytearray.fromhex("7e ff 01")
         brightness_packet.append(brightness_percent)
-        brightness_packet.append([0, 0xff, 0xff, 0xff, 0xff, 0xef])
+        brightness_packet.extend([0, 0xff, 0xff, 0xff, 0xff, 0xef])
         await self._write(brightness_packet)
 
     @retry_bluetooth_connection_error
@@ -288,7 +287,7 @@ class LEDBLELEDLamp:
         LOGGER.debug('Effect ID: %s', effect_id)
         LOGGER.debug('Effect name: %s', effect)
         effect_packet.append(effect_id)
-        effect_packet.append([0x03, 0xff, 0xff, 0xff, 0xef])
+        effect_packet.extend([0x03, 0xff, 0xff, 0xff, 0xef])
         await self._write(effect_packet)
 
     @retry_bluetooth_connection_error
