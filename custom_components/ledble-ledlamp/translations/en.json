@@ -17,7 +17,7 @@
             },
             "manual": {
                 "data": {
-                    "mac": "BJ_LED device:",
+                    "mac": "LEDBLE device:",
                     "name": "Name"
                 },
                 "title": "Enter bluetooth MAC address"
@@ -42,5 +42,5 @@
             }
         }
     },
-    "title": "BJ_LED"
+    "title": "LEDBLE Device"
 }

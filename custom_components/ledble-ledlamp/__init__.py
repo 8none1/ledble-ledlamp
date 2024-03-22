@@ -5,7 +5,7 @@ from homeassistant.core import HomeAssistant, Event
 from homeassistant.const import CONF_MAC, EVENT_HOMEASSISTANT_STOP
 
 from .const import DOMAIN, CONF_RESET, CONF_DELAY
-from .bjled import BJLEDInstance
+from .ledble-ledlamp import LEDBLELEDLamp
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -13,11 +13,11 @@ PLATFORMS = ["light"]
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up from a config entry."""
-    reset = entry.options.get(CONF_RESET, None) or entry.data.get(CONF_RESET, None)
+    #reset = entry.options.get(CONF_RESET, None) or entry.data.get(CONF_RESET, None)
     delay = entry.options.get(CONF_DELAY, None) or entry.data.get(CONF_DELAY, None)
     LOGGER.debug("Config Reset data: %s and config delay data: %s", reset, delay)
 
-    instance = BJLEDInstance(entry.data[CONF_MAC], reset, delay, hass)
+    instance = LEDBLELEDLamp(entry.data[CONF_MAC], hass)
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = instance
 

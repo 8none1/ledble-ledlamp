@@ -1,7 +1,7 @@
 import logging
 import voluptuous as vol
 from typing import Any, Optional, Tuple
-from .bjled import BJLEDInstance
+from .ledble-ledlamp import LEDBLELEDLamp
 from .const import DOMAIN
 
 from homeassistant.const import CONF_MAC
@@ -31,9 +31,9 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
 
 class BJLEDLight(LightEntity):
     def __init__(
-        self, bjledinstance: BJLEDInstance, name: str, entry_id: str
+        self, bleledlampinstance: LEDBLELEDLamp, name: str, entry_id: str
     ) -> None:
-        self._instance = bjledinstance
+        self._instance = bleledlampinstance
         self._entry_id = entry_id
         self._attr_supported_color_modes = {ColorMode.RGB}
         self._attr_supported_features = LightEntityFeature.EFFECT | LightEntityFeature.FLASH

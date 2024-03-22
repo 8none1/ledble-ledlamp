@@ -1,12 +1,15 @@
 # ledble-ledlamp
 
-Home Assistant integration for LEDBLE lights which use the `LED Lamp` app over Bluetooth LE.
+Another set of extremely low priced LEDs.  These ones cost me £1.60 plus tax for a 5M strip with an IR remote and Bluetooth control.  The price has since increased.  I got them in the Anniversary Sale.
 
-Another set of extremely low priced LEDs.  These ones cost me £1.60 plus tax for a 5M strip with an IR remote and Bluetooth control.
+<https://www.aliexpress.com/item/1005006368669067.html>
 
-The price has since increased.  I got them in the Anniversary Sale.
+This Home Assistant integration supports LEDBLE lights which use the `LED Lamp` app over Bluetooth LE.  My device advertises the name `LEDBLE-01-9201`.  I only have one device that uses this controller at the moment, so I don't know if this changes (specifically the last four digits) but I don't expect it will. i.e. this name is probably fixed.
 
-https://www.aliexpress.com/item/1005006368669067.html
+They provide write characteristic `0xFFE1`.
+
+There is an interesting problem with these lights in that the name they advertise matches another set of lights with a different controller.  The default LED BLE Home Assistant integration tries to connect to these lights but doesn't speak the right protocol and doesn't try to connect to the right characteristic resulting in a blanket error.  A better fix would be to update the Home Assistant core integration to support these lights, but that would involve adding support to three other projects first, and it's a real spaghetti of indirection, so I can't be bothered.  There is an issue open [here](https://github.com/home-assistant/core/issues/105338#issuecomment-2010342769) but I doubt anything will happen with it.
+So this integration exists.  I don't yet know how they will co-exist.  We will soon find out.
 
 ## Bluetooth LE Protocol
 
@@ -74,6 +77,7 @@ Action: `03`
 Action: `04`
 
 `7e ff 04 01 ff ff ff ff ef` - On
+
 `7e ff 04 00 ff ff ff ff ef` - Off
 
 ### Colour

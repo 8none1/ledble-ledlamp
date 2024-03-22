@@ -1,5 +1,5 @@
 import asyncio
-from .bjled import BJLEDInstance
+from .ledble-ledlamp import LEDBLELEDLamp
 from typing import Any
 
 from bluetooth_data_tools import human_readable_name
@@ -28,7 +28,7 @@ class DeviceData(BluetoothData):
         #LOGGER.debug("Discovered bluetooth devices, DeviceData, : %s , %s", self._discovery.address, self._discovery.name)
 
     def supported(self):
-        return self._discovery.name.lower().startswith("bj_led")
+        return self._discovery.name.lower().startswith("ledble-01")
 
     def address(self):
         return self._discovery.address
@@ -46,7 +46,7 @@ class DeviceData(BluetoothData):
         """Update from BLE advertisement data."""
         LOGGER.debug("Parsing BLE advertisement data: %s", service_info)
         
-class BJLEDFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
+class BLEDBLELEDLampFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
 
@@ -98,7 +98,7 @@ class BJLEDFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                   LOGGER.debug(f"Address: {each.address()}")
                   if each.address() == self.mac:
                     self.name = each.get_device_name()
-            if self.name is None: self.name = "BJ_LEDx"
+            if self.name is None: self.name = "LEDBLE-01-x"
             await self.async_set_unique_id(self.mac, raise_on_progress=False)
             self._abort_if_unique_id_configured()
             return await self.async_step_validate()
