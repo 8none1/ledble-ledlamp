@@ -2,6 +2,8 @@
 
 Another set of extremely low priced LEDs.  These ones cost me £1.60 plus tax for a 5M strip with an IR remote and Bluetooth control.  The price has since increased.  I got them in the Anniversary Sale.
 
+![image](https://github.com/8none1/ledble-ledlamp/assets/6552931/5055edfb-6705-41d6-8384-d12797efa29f)
+
 <https://www.aliexpress.com/item/1005006368669067.html>
 
 This Home Assistant integration supports LEDBLE lights which use the `LED Lamp` app over Bluetooth LE.  My device advertises the name `LEDBLE-01-9201`.  I only have one device that uses this controller at the moment, so I don't know if this changes (specifically the last four digits) but I don't expect it will. i.e. this name is probably fixed.
