@@ -5,7 +5,8 @@ from homeassistant.core import HomeAssistant, Event
 from homeassistant.const import CONF_MAC, EVENT_HOMEASSISTANT_STOP
 
 from .const import DOMAIN, CONF_RESET, CONF_DELAY
-from .ledble-ledlamp import LEDBLELEDLamp
+from .ledble_ledlamp import LEDBLELEDLamp
+
 import logging
 
 LOGGER = logging.getLogger(__name__)

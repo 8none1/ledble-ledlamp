@@ -1,5 +1,5 @@
 from enum import Enum
 
-DOMAIN = "ledble-ledlamp"
+DOMAIN = "ledble_ledlamp"
 CONF_RESET = "reset"
 CONF_DELAY = "delay"

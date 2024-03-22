@@ -1,7 +1,7 @@
 import logging
 import voluptuous as vol
 from typing import Any, Optional, Tuple
-from .ledble-ledlamp import LEDBLELEDLamp
+from .ledble_ledlamp import LEDBLELEDLamp
 from .const import DOMAIN
 
 from homeassistant.const import CONF_MAC
@@ -26,10 +26,10 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
     instance = hass.data[DOMAIN][config_entry.entry_id]
     await instance.update()
     async_add_devices(
-        [BJLEDLight(instance, config_entry.data["name"], config_entry.entry_id)]
+        [LEDBLELEDLampLight(instance, config_entry.data["name"], config_entry.entry_id)]
     )
 
-class BJLEDLight(LightEntity):
+class LEDBLELEDLampLight(LightEntity):
     def __init__(
         self, bleledlampinstance: LEDBLELEDLamp, name: str, entry_id: str
     ) -> None:

@@ -1,5 +1,5 @@
 import asyncio
-from .ledble-ledlamp import LEDBLELEDLamp
+from .ledble_ledlamp import LEDBLELEDLamp
 from typing import Any
 
 from bluetooth_data_tools import human_readable_name
@@ -46,7 +46,7 @@ class DeviceData(BluetoothData):
         """Update from BLE advertisement data."""
         LOGGER.debug("Parsing BLE advertisement data: %s", service_info)
         
-class BLEDBLELEDLampFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
+class LEDBLELEDLampFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
 
@@ -174,7 +174,7 @@ class BLEDBLELEDLampFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def toggle_light(self):
         if not self._instance:
-            self._instance = BJLEDInstance(self.mac, False, 120, self.hass)
+            self._instance = LEDBLELEDLamp(self.mac, False, 120, self.hass)
         try:
             await self._instance.update()
             await self._instance.turn_on()
