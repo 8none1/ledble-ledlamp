@@ -174,7 +174,7 @@ class LEDBLELEDLampFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def toggle_light(self):
         if not self._instance:
-            self._instance = LEDBLELEDLamp(self.mac, False, 120, self.hass)
+            self._instance = LEDBLELEDLamp(self.mac, self.hass)
         try:
             await self._instance.update()
             await self._instance.turn_on()
