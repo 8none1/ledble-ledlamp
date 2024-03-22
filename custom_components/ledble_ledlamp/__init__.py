@@ -15,8 +15,8 @@ PLATFORMS = ["light"]
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up from a config entry."""
     #reset = entry.options.get(CONF_RESET, None) or entry.data.get(CONF_RESET, None)
-    delay = entry.options.get(CONF_DELAY, None) or entry.data.get(CONF_DELAY, None)
-    LOGGER.debug("Config Reset data: %s and config delay data: %s", reset, delay)
+    #delay = entry.options.get(CONF_DELAY, None) or entry.data.get(CONF_DELAY, None)
+    #LOGGER.debug("Config Reset data: %s and config delay data: %s", reset, delay)
 
     instance = LEDBLELEDLamp(entry.data[CONF_MAC], hass)
     hass.data.setdefault(DOMAIN, {})
