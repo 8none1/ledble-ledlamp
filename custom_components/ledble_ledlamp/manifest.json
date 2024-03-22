@@ -1,5 +1,5 @@
 {
-  "domain": "ledble-ledlamp",
+  "domain": "ledble_ledlamp",
   "name": "LEDBLE Led Lamp",
   "bluetooth": [
       { "local_name": "LEDBLE-01" }
