@@ -293,6 +293,7 @@ class LEDBLELEDLamp:
     @retry_bluetooth_connection_error
     async def turn_on(self):
         await self._write(self._turn_on_cmd)
+        await self.write(bytearray.fromhex("7e ff 02 41 00 ff ff ff ef"))
         self._is_on = True
 
     @retry_bluetooth_connection_error
