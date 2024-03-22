@@ -1,5 +1,5 @@
 import asyncio
-from .ledble_ledlamp import LEDBLELEDLamp
+from .ledbleledlamp import LEDBLELEDLamp
 from typing import Any
 
 from bluetooth_data_tools import human_readable_name

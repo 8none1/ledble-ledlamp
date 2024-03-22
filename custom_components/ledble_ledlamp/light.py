@@ -1,7 +1,7 @@
 import logging
 import voluptuous as vol
 from typing import Any, Optional, Tuple
-from .ledble_ledlamp import LEDBLELEDLamp
+from .ledbleledlamp import LEDBLELEDLamp
 from .const import DOMAIN
 
 from homeassistant.const import CONF_MAC

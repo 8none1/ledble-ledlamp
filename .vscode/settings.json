@@ -4,6 +4,7 @@
         "hass",
         "LEDBLE",
         "LEDBLELED",
+        "ledbleledlamp",
         "ledlamp"
     ]
 }
