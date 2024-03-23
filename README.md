@@ -100,3 +100,13 @@ Action: `05`
 7e ff 05 03 00 ff 00 ff ef
 7e ff 05 03 00 00 ff ff ef
 ```
+
+## Other projects that might be of interest
+
+- [iDotMatrix](https://github.com/8none1/idotmatrix)
+- [Zengge LEDnet WF](https://github.com/8none1/zengge_lednetwf)
+- [iDealLED](https://github.com/8none1/idealLED)
+- [BJ_LED](https://github.com/8none1/bj_led)
+- [ELK BLEDOB](https://github.com/8none1/elk-bledob)
+- [HiLighting LED](https://github.com/8none1/hilighting_homeassistant)
+- [BLELED LED Lamp](https://github.com/8none1/ledble-ledlamp)
