@@ -6,6 +6,8 @@ Another set of extremely low priced LEDs.  These ones cost me £1.60 plus tax fo
 
 <https://www.aliexpress.com/item/1005006368669067.html>
 
+![image](https://github.com/8none1/ledble-ledlamp/assets/6552931/b36094f9-d6a8-45fc-b81b-b41ad34a4169)
+
 This Home Assistant integration supports LEDBLE lights which use the `LED Lamp` app over Bluetooth LE.  My device advertises the name `LEDBLE-01-9201`.  I only have one device that uses this controller at the moment, so I don't know if this changes (specifically the last four digits) but I don't expect it will. i.e. this name is probably fixed.
 
 They provide write characteristic `0xFFE1`.
