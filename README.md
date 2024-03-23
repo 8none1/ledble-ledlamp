@@ -103,6 +103,29 @@ Action: `05`
 7e ff 05 03 00 00 ff ff ef
 ```
 
+## Installation
+
+### Requirements
+
+You need to have the bluetooth component configured and working in Home Assistant in order to use this integration.
+
+### HACS
+
+Add this repo to HACS as a custom repo.  Click through:
+
+- HACS -> Integrations -> Top right menu -> Custom Repositories
+- Paste the Github URL to this repo in to the Repository box
+- Choose category `Integration`
+- Click Add
+- Restart Home Assistant
+
+NB: Because of the advertised name of these devices the core `BLE LED` integration will try and control them, but it doesn't speak the correct protocol.  As such you have to manually add your devices.  Do this by:
+
+- In the Integrations screen of Home Assistant click `Add Integration` in the bottom right
+- Search for `LEDBLE Led Lamp` and click on it
+- If any devices are in range of your HA server (or BT proxy) they will appear and allow you to add them
+
+
 ## Other projects that might be of interest
 
 - [iDotMatrix](https://github.com/8none1/idotmatrix)
