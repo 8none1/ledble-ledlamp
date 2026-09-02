@@ -77,7 +77,13 @@ WRITE_CHARACTERISTIC_UUIDS = ["0000ffe1-0000-1000-8000-00805f9b34fb"]
 TURN_ON_CMD  = [bytearray.fromhex("7e ff 04 01 ff ff ff ff ef")]
 TURN_OFF_CMD = [bytearray.fromhex("7e ff 04 00 ff ff ff ff ef")]
 DEFAULT_ATTEMPTS = 3
-BLEAK_BACKOFF_TIME = 0.25
+# BlueZ needs time to finish tearing a link down before it will let us
+# reconnect.  A quarter of a second isn't enough and all three attempts end up
+# failing inside a second.
+BLEAK_BACKOFF_TIME = 1.0
+# These controllers drop the connection if you hammer them with back to back
+# writes, so leave a small gap between packets.
+WRITE_GAP = 0.1
 RETRY_BACKOFF_EXCEPTIONS = (BleakDBusError)
 
 WrapFuncType = TypeVar("WrapFuncType", bound=Callable[..., Any])
@@ -159,6 +165,8 @@ class LEDBLELEDLamp:
                 f"You need to add bluetooth integration (https://www.home-assistant.io/integrations/bluetooth) or couldn't find a nearby device with address: {address}"
             )
         self._connect_lock: asyncio.Lock = asyncio.Lock()
+        self._operation_lock: asyncio.Lock = asyncio.Lock()
+        self._last_write = 0.0
         self._client: BleakClientWithServiceCache | None = None
         self._disconnect_timer: asyncio.TimerHandle | None = None
         self._cached_services: BleakGATTServiceCollection | None = None
@@ -192,12 +200,22 @@ class LEDBLELEDLamp:
 
     async def _write(self, data: bytearray):
         """Send command to device and read response."""
-        await self._ensure_connected()
-        await self._write_while_connected(data)
+        # Serialise operations so the disconnect timer can't fire between
+        # connecting and writing, and so callers issuing several commands in a
+        # row don't interleave.
+        async with self._operation_lock:
+            await self._ensure_connected()
+            await self._write_while_connected(data)
 
     async def _write_while_connected(self, data: bytearray):
+        gap = self._last_write + WRITE_GAP - self.loop.time()
+        if gap > 0:
+            await asyncio.sleep(gap)
         LOGGER.debug(f"Writing data to {self.name}: {data.hex()}")
-        await self._client.write_gatt_char(self._write_uuid, data, False)
+        try:
+            await self._client.write_gatt_char(self._write_uuid, data, False)
+        finally:
+            self._last_write = self.loop.time()
     
     @property
     def mac(self):
@@ -267,16 +285,6 @@ class LEDBLELEDLamp:
         await self._write(brightness_packet)
 
     @retry_bluetooth_connection_error
-    async def turn_on(self):
-        await self._write(self._turn_on_cmd)
-        self._is_on = True
-                
-    @retry_bluetooth_connection_error
-    async def turn_off(self):
-        await self._write(self._turn_off_cmd)
-        self._is_on = False
-
-    @retry_bluetooth_connection_error
     async def set_effect(self, effect: str):
         if effect not in EFFECT_LIST:
             LOGGER.error("Effect %s not supported", effect)
@@ -310,9 +318,13 @@ class LEDBLELEDLamp:
         """Ensure connection to device is established."""
         if self._connect_lock.locked():
             LOGGER.debug(
-                "%s: Connection already in progress, waiting for it to complete",
+                "%s: Connect/disconnect already in progress, waiting for it to complete",
                 self.name,
             )
+            # Actually wait for it.  Otherwise we can sail past the check below
+            # while a disconnect is in flight and hand out a dying client.
+            async with self._connect_lock:
+                pass
         if self._client and self._client.is_connected:
             self._reset_disconnect_timer()
             return
@@ -339,6 +351,9 @@ class LEDBLELEDLamp:
             self._cached_services = client.services if resolved else None
 
             self._client = client
+            # Treat the connection as a write for gap purposes so the first
+            # packet doesn't land before the link has settled.
+            self._last_write = self.loop.time()
             self._reset_disconnect_timer()
 
     def _resolve_characteristics(self, services: BleakGATTServiceCollection) -> bool:
@@ -364,6 +379,14 @@ class LEDBLELEDLamp:
 
     def _disconnected(self, client: BleakClientWithServiceCache) -> None:
         """Disconnected callback."""
+        # Only tear down our state if this is the client we're actually holding,
+        # otherwise a late callback would clobber a newer connection.
+        if client is self._client:
+            if self._disconnect_timer:
+                self._disconnect_timer.cancel()
+                self._disconnect_timer = None
+            self._client = None
+            self._write_uuid = None
         if self._expected_disconnect:
             LOGGER.debug("%s: Disconnected from device", self.name)
             return
@@ -381,6 +404,13 @@ class LEDBLELEDLamp:
 
     async def _execute_timed_disconnect(self) -> None:
         """Execute timed disconnection."""
+        if self._operation_lock.locked():
+            LOGGER.debug(
+                "%s: Operation in progress, deferring timed disconnect",
+                self.name,
+            )
+            self._reset_disconnect_timer()
+            return
         LOGGER.debug(
             "%s: Disconnecting after timeout of %s",
             self.name,
@@ -391,6 +421,9 @@ class LEDBLELEDLamp:
     async def _execute_disconnect(self) -> None:
         """Execute disconnection."""
         async with self._connect_lock:
+            if self._disconnect_timer:
+                self._disconnect_timer.cancel()
+                self._disconnect_timer = None
             client = self._client
             self._expected_disconnect = True
             self._client = None
