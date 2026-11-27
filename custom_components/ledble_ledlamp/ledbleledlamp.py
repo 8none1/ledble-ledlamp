@@ -4,7 +4,7 @@ from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.components.light import (ColorMode)
 from bleak.backends.device import BLEDevice
 from bleak.backends.service import BleakGATTCharacteristic, BleakGATTServiceCollection
-from bleak.exc import BleakDBusError
+from bleak.exc import BleakDBusError, BleakError
 from bleak_retry_connector import BLEAK_RETRY_EXCEPTIONS as BLEAK_EXCEPTIONS
 from bleak_retry_connector import (
     BleakClientWithServiceCache,
@@ -211,9 +211,17 @@ class LEDBLELEDLamp:
         gap = self._last_write + WRITE_GAP - self.loop.time()
         if gap > 0:
             await asyncio.sleep(gap)
+        # Take our own reference *after* the sleep.  The disconnect callback
+        # sets self._client to None, and it can fire while we're waiting out
+        # the write gap.  Raise a BleakError rather than tripping over None so
+        # the retry decorator reconnects and resends.
+        client = self._client
+        write_uuid = self._write_uuid
+        if client is None or not client.is_connected or write_uuid is None:
+            raise BleakError(f"{self.name}: Disconnected before write")
         LOGGER.debug(f"Writing data to {self.name}: {data.hex()}")
         try:
-            await self._client.write_gatt_char(self._write_uuid, data, False)
+            await client.write_gatt_char(write_uuid, data, False)
         finally:
             self._last_write = self.loop.time()
     
